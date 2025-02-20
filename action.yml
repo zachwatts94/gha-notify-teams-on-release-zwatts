@@ -15,6 +15,14 @@ runs:
       run: |
         if [ "${{ github.event.release.name }}" != '' ]; then
           curl -X POST "${{ inputs.webhook-link }}" \
-          --data '{"@context":"https://schema.org/extensions","@type":"MessageCard","themeColor":"d9534f","title":"Release ${{ github.event.release.name }} created on repository ${{ github.repository }}","text":"${{ github.event.release.body }}"}'
+          --data @- <<EOF
+{
+  "@context": "https://schema.org/extensions",
+  "@type": "MessageCard",
+  "themeColor": "d9534f",
+  "title": "Release ${{ github.event.release.name }} created on repository ${{ github.repository }}",
+  "text": "${{ github.event.release.body }}"
+}
+EOF
         fi
       shell: bash
