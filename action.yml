@@ -11,21 +11,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Notify Teams on Release
-      shell: bash
+    - name: notify
       run: |
-        if [ -n "${{ github.event.release.name }}" ]; then
-          RELEASE_BODY=$(echo '${{ github.event.release.body }}' | jq -Rs .)
-          
+        if [ "${{ github.event.release.name }}" != '' ]; then
           curl -X POST "${{ inputs.webhook-link }}" \
-            --header "Content-Type: application/json" \
-            --data "$(jq -n --arg title "Release ${{ github.event.release.name }} created on repository ${{ github.repository }}" \
-                         --arg text "$RELEASE_BODY" \
-            '{
-              "@context": "https://schema.org/extensions",
-              "@type": "MessageCard",
-              "themeColor": "d9534f",
-              "title": $title,
-              "text": $text
-            }')"
+          --data '{"@context":"https://schema.org/extensions","@type":"MessageCard","themeColor":"d9534f","title":"Release ${{ github.event.release.name }} created on repository ${{ github.repository }}","text":"${{ github.event.release.body }}"}'
         fi
+      shell: bash
