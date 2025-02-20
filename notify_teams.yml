@@ -1,0 +1,27 @@
+name: gha-notify-teams-on-release-zwatts
+author: Zachary Watts
+description: GitHub Action to notify a Teams channel when a release is created
+branding:
+  icon: box
+  color: purple
+inputs:
+  webhook-link:
+    description: Teams webhook link to send notification to
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Notify Teams on Release
+      shell: bash
+      run: |
+        if [ -n "${{ github.event.release.name }}" ]; then
+          curl -X POST "${{ inputs.webhook-link }}" \
+          --header "Content-Type: application/json" \
+          --data '{
+            "@context": "https://schema.org/extensions",
+            "@type": "MessageCard",
+            "themeColor": "d9534f",
+            "title": "Release '${{ github.event.release.name }}' created on repository '${{ github.repository }}'",
+            "text": "'"$(echo "${{ github.event.release.body }}" | jq -Rs .)"'"
+          }'
+        fi
