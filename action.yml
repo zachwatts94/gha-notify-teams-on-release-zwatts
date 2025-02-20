@@ -15,6 +15,7 @@ runs:
       shell: bash
       run: |
         if [ -n "${{ github.event.release.name }}" ]; then
+          RELEASE_BODY=$(echo '${{ github.event.release.body }}' | jq -Rs .)
           curl -X POST "${{ inputs.webhook-link }}" \
           --header "Content-Type: application/json" \
           --data '{
@@ -22,6 +23,6 @@ runs:
             "@type": "MessageCard",
             "themeColor": "d9534f",
             "title": "Release '${{ github.event.release.name }}' created on repository '${{ github.repository }}'",
-            "text": "'"$(echo "${{ github.event.release.body }}" | jq -Rs .)"'"
+            "text": '"$RELEASE_BODY"'
           }'
         fi
