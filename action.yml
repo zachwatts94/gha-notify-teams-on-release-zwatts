@@ -12,6 +12,7 @@ runs:
   using: "composite"
   steps:
     - name: notify
+      shell: bash
       run: |
         if [ "${{ github.event.release.name }}" != '' ]; then
           curl -X POST "${{ inputs.webhook-link }}" \
@@ -25,4 +26,3 @@ runs:
 }
 EOF
         fi
-      shell: bash
